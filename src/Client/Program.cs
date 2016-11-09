@@ -135,8 +135,8 @@
             {
                 _host = x.Host(new Uri(ConfigurationManager.AppSettings["RabbitMQHost"]), h =>
                 {
-                    h.Username("guest");
-                    h.Password("guest");
+                    h.Username("courier");
+                    h.Password("strawberry");
                 });
             });
         }

@@ -24,7 +24,7 @@
             long count = Interlocked.Increment(ref _completedCount);
             _durations.Add(duration);
 
-            if (count % 100 == 0)
+            if (count % 10 == 0)
                 Snapshot();
         }
 

@@ -1,6 +1,6 @@
 ﻿namespace TrackingService
 {
-    using MassTransit.NHibernateIntegration;
+    using MassTransit.EntityFrameworkIntegration;
     using Tracking;
 
 

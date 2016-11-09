@@ -4,14 +4,13 @@
     using System.Configuration;
     using Automatonymous;
     using MassTransit;
-    using MassTransit.NHibernateIntegration.Saga;
     using MassTransit.RabbitMqTransport;
     using MassTransit.Saga;
-    using NHibernate;
     using Topshelf;
     using Topshelf.Logging;
     using Tracking;
-
+    using MassTransit.EntityFrameworkIntegration;
+    using MassTransit.EntityFrameworkIntegration.Saga;
 
     class TrackingService :
         ServiceControl
@@ -22,9 +21,7 @@
         IBusControl _busControl;
         RoutingSlipStateMachine _machine;
         RoutingSlipMetrics _metrics;
-        SQLiteSessionFactoryProvider _provider;
-        ISagaRepository<RoutingSlipState> _repository;
-        ISessionFactory _sessionFactory;
+        Lazy<ISagaRepository<RoutingSlipState>> _repository;
 
         public bool Start(HostControl hostControl)
         {
@@ -34,17 +31,19 @@
             _activityMetrics = new RoutingSlipMetrics("Validate Activity");
 
             _machine = new RoutingSlipStateMachine();
-            _provider = new SQLiteSessionFactoryProvider(false, typeof(RoutingSlipStateSagaMap));
-            _sessionFactory = _provider.GetSessionFactory();
 
-            _repository = new NHibernateSagaRepository<RoutingSlipState>(_sessionFactory);
+            SagaDbContextFactory sagaDbContextFactory =
+                () => new SagaDbContext<RoutingSlipState, RoutingSlipStateSagaMap>(SagaDbContextFactoryProvider.ConnectionString);
+
+            _repository = new Lazy<ISagaRepository<RoutingSlipState>>(
+               () => new EntityFrameworkSagaRepository<RoutingSlipState>(sagaDbContextFactory));
 
             _busControl = Bus.Factory.CreateUsingRabbitMq(x =>
             {
                 IRabbitMqHost host = x.Host(new Uri(ConfigurationManager.AppSettings["RabbitMQHost"]), h =>
                 {
-                    h.Username("guest");
-                    h.Password("guest");
+                    h.Username("courier");
+                    h.Password("strawberry");
                 });
 
                 x.ReceiveEndpoint(host, "routing_slip_metrics", e =>
@@ -65,7 +64,7 @@
                 {
                     e.PrefetchCount = 8;
                     e.UseConcurrencyLimit(1);
-                    e.StateMachineSaga(_machine, _repository);
+                    e.StateMachineSaga(_machine, _repository.Value);
                 });
             });
 

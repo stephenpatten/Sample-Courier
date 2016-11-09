@@ -35,8 +35,8 @@
             {
                 IRabbitMqHost host = x.Host(new Uri(ConfigurationManager.AppSettings["RabbitMQHost"]), h =>
                 {
-                    h.Username("guest");
-                    h.Password("guest");
+                    h.Username("courier");
+                    h.Password("strawberry");
                 });
 
                 x.ReceiveEndpoint(host, ConfigurationManager.AppSettings["ValidateActivityQueue"], e =>
