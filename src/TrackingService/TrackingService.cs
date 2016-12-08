@@ -43,7 +43,7 @@
                 IRabbitMqHost host = x.Host(new Uri(ConfigurationManager.AppSettings["RabbitMQHost"]), h =>
                 {
                     h.Username("courier");
-                    h.Password("strawberry");
+                    h.Password("pear");
                 });
 
                 x.ReceiveEndpoint(host, "routing_slip_metrics", e =>
@@ -70,7 +70,7 @@
 
             _log.Info("Starting bus...");
 
-            _busControl.Start();
+            _busControl.StartAsync().Wait();
 
             return true;
         }

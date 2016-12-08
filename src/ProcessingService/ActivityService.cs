@@ -11,6 +11,7 @@
     using Processing.Activities.Validate;
     using Topshelf;
     using Topshelf.Logging;
+    using GreenPipes;
 
 
     class ActivityService :
@@ -36,7 +37,7 @@
                 IRabbitMqHost host = x.Host(new Uri(ConfigurationManager.AppSettings["RabbitMQHost"]), h =>
                 {
                     h.Username("courier");
-                    h.Password("strawberry");
+                    h.Password("pear");
                 });
 
                 x.ReceiveEndpoint(host, ConfigurationManager.AppSettings["ValidateActivityQueue"], e =>
@@ -48,14 +49,35 @@
 
                 string compQueue = ConfigurationManager.AppSettings["CompensateRetrieveActivityQueue"];
 
-                Uri compAddress = host.Settings.GetQueueAddress(compQueue);
+                Uri compAddress = host.GetSendAddress(compQueue);
 
                 x.ReceiveEndpoint(host, ConfigurationManager.AppSettings["RetrieveActivityQueue"], e =>
                 {
                     e.PrefetchCount = 100;
-                    //                    e.Retry(Retry.Selected<HttpRequestException>().Interval(5, TimeSpan.FromSeconds(1)));
-                    e.ExecuteActivityHost<RetrieveActivity, RetrieveArguments>(compAddress);
+                    //e.UseRetry(Retry.Selected<ArgumentNullException>().Interval(5, TimeSpan.FromSeconds(1)));
+                    //e.ExecuteActivityHost<RetrieveActivity, RetrieveArguments>(compAddress);
+                    e.ExecuteActivityHost<RetrieveActivity, RetrieveArguments>(compAddress, h =>
+                    {
+                        h.UseRetry(rcfg =>
+                        {
+                            rcfg.Interval(5, TimeSpan.FromSeconds(1));
+                            //rcfg.Handle<ArgumentNullException>(y=>
+                            //{
+                            //    var a = true;
+                            //    return a;
+                            //});
+                        });
+                    });
                 });
+
+                //x.ReceiveEndpoint(host, ConfigurationManager.AppSettings["RetrieveActivityQueue"], e =>
+                //{
+                //    e.PrefetchCount = 100;
+                //    e.ExecuteActivityHost<RetrieveActivity, RetrieveArguments>(compAddress, h =>
+                //    {
+                //        h.UseRetry(rcfg => rcfg.Interval(5, TimeSpan.FromSeconds(1)));
+                //    });
+                //});
 
                 x.ReceiveEndpoint(host, ConfigurationManager.AppSettings["CompensateRetrieveActivityQueue"],
                     e => e.CompensateActivityHost<RetrieveActivity, RetrieveLog>());
@@ -63,7 +85,7 @@
 
             _log.Info("Starting bus...");
 
-            _busControl.Start();
+            _busControl.StartAsync().Wait();
 
             return true;
         }

@@ -30,15 +30,15 @@
 
             IBusControl busControl = CreateBus();
 
-            busControl.Start();
+            busControl.StartAsync().Wait();
 
             string validateQueueName = ConfigurationManager.AppSettings["ValidateActivityQueue"];
 
-            Uri validateAddress = _host.Settings.GetQueueAddress(validateQueueName);
+            Uri validateAddress = _host.GetSendAddress(validateQueueName);
 
             string retrieveQueueName = ConfigurationManager.AppSettings["RetrieveActivityQueue"];
 
-            Uri retrieveAddress = _host.Settings.GetQueueAddress(retrieveQueueName);
+            Uri retrieveAddress = _host.GetSendAddress(retrieveQueueName);
 
 
             try
@@ -136,7 +136,7 @@
                 _host = x.Host(new Uri(ConfigurationManager.AppSettings["RabbitMQHost"]), h =>
                 {
                     h.Username("courier");
-                    h.Password("strawberry");
+                    h.Password("pear");
                 });
             });
         }
