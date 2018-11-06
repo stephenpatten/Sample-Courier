@@ -1,27 +1,34 @@
-﻿namespace TrackingService
+﻿
+namespace TrackingService
 {
     using System;
     using System.Configuration;
+
     using Automatonymous;
+
     using MassTransit;
-    using MassTransit.RabbitMqTransport;
-    using MassTransit.Saga;
-    using Topshelf;
-    using Topshelf.Logging;
-    using Tracking;
     using MassTransit.EntityFrameworkIntegration;
     using MassTransit.EntityFrameworkIntegration.Saga;
+    using MassTransit.RabbitMqTransport;
+    using MassTransit.Saga;
 
-    class TrackingService :
-        ServiceControl
+    using Topshelf;
+    using Topshelf.Logging;
+
+    using Tracking;
+
+    /// <summary>
+    /// The tracking service.
+    /// </summary>
+    internal class TrackingService : ServiceControl
     {
-        readonly LogWriter _log = HostLogger.Get<TrackingService>();
-        RoutingSlipMetrics _activityMetrics;
+        private readonly LogWriter _log = HostLogger.Get<TrackingService>();
+        private RoutingSlipMetrics _activityMetrics;
 
-        IBusControl _busControl;
-        RoutingSlipStateMachine _machine;
-        RoutingSlipMetrics _metrics;
-        Lazy<ISagaRepository<RoutingSlipState>> _repository;
+        private IBusControl _busControl;
+        private RoutingSlipStateMachine _machine;
+        private RoutingSlipMetrics _metrics;
+        private Lazy<ISagaRepository<RoutingSlipState>> _repository;
 
         public bool Start(HostControl hostControl)
         {

@@ -1,4 +1,5 @@
-﻿namespace TrackingService
+﻿
+namespace TrackingService
 {
     using System;
     using System.Data.SqlClient;
