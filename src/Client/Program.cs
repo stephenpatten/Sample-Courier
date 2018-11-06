@@ -1,4 +1,5 @@
-﻿namespace Client
+﻿
+namespace Client
 {
     using System;
     using System.Collections.Generic;
@@ -48,10 +49,14 @@
                     Console.Write("Enter an address (quit exits): ");
                     string requestAddress = Console.ReadLine();
                     if (requestAddress == "quit")
+                    {
                         break;
+                    }
 
                     if (string.IsNullOrEmpty(requestAddress))
-                        requestAddress = "http://www.microsoft.com/index.html";
+                    {
+                        requestAddress = "https://www.microsoft.com/en-us/";
+                    }
 
                     int limit = 1;
 
@@ -69,7 +74,7 @@
                     switch (requestAddress)
                     {
                         case "0":
-                            requestAddress = "http://www.microsoft.com/index.html";
+                            requestAddress = "https://www.microsoft.com/en-us/";
                             break;
                         case "1":
                             requestAddress = "http://i.imgur.com/Iroma7d.png";
@@ -135,8 +140,8 @@
             {
                 _host = x.Host(new Uri(ConfigurationManager.AppSettings["RabbitMQHost"]), h =>
                 {
-                    h.Username("courier");
-                    h.Password("pear");
+                    h.Username("samplecourier");
+                    h.Password("samplecourier");
                 });
             });
         }

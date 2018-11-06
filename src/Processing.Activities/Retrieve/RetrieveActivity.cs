@@ -21,7 +21,8 @@
 
             _log.DebugFormat("Retrieve Content: {0}", sourceAddress);
 
-            throw new ArgumentNullException("TEST");
+            //// throw new ArgumentNullException("TEST");
+
             try
             {
                 using (var client = new HttpClient())

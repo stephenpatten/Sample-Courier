@@ -42,8 +42,8 @@
             {
                 IRabbitMqHost host = x.Host(new Uri(ConfigurationManager.AppSettings["RabbitMQHost"]), h =>
                 {
-                    h.Username("courier");
-                    h.Password("pear");
+                    h.Username("samplecourier");
+                    h.Password("samplecourier");
                 });
 
                 x.ReceiveEndpoint(host, "routing_slip_metrics", e =>

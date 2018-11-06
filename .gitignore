@@ -43,3 +43,4 @@ doc/build/*
 NuGet.Exe
 
 nuspecs/
+/src/.vs/Sample-Courier/v15/Server/sqlite3
